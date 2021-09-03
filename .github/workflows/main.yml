@@ -18,6 +18,8 @@ jobs:
         uses: actions/checkout@master
       - name: Setup Stack
         uses: mstksg/setup-stack@v2
+        env:
+          ACTIONS_ALLOW_UNSECURE_COMMANDS: true
       - name: Generate
         run: make generate
       - name: Install
