@@ -25,12 +25,12 @@ jobs:
         if: matrix.os != 'windows-2019'
         with:
           path: ~/.stack
-          key: ${{ runner.os }}-store-${{ hashFiles('stack.yaml.lock') }}
+          key: ${{ runner.os }}-store-${{ hashFiles('stack.yaml.lock') }}-${{ hashFiles('generate.cabal') }}
       - name: Generate
         run: make generate
       - name: Install
         run: yarn
       - name: Percy Test
-        run: npx percy exec -- percy snapshot snapshots.yaml
+        run: npx percy snapshot snapshots.yaml
         env:
           PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
