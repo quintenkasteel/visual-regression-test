@@ -30,7 +30,9 @@ jobs:
         run: make generate
       - name: Install
         run: yarn
-      - name: Percy Test
-        run: npx percy snapshot snapshots.yaml
+      - name: Yarn Build
+        run: yarn build
+      - name: Percy
+        run: yarn percy snapshot snapshots.yaml
         env:
           PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
