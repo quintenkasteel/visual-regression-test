@@ -8,28 +8,10 @@ import Data.Text (Text)
 import Data.Vector (Vector)
 import Data.Yaml
 
--- data Person = Person
---   { personName :: !Text,
---     personAge :: !Int
---   }
---   deriving (Show, Eq)
-
--- -- Could use Generic deriving, doing it by hand
--- instance ToJSON Person where
---   toJSON Person {..} =
---     object
---       [ "name" .= personName,
---         "age" .= personAge
---       ]
-
--- instance FromJSON Person where
---   parseJSON = withObject "Person" $ \o ->
---     Person
---       <$> o .: "name"
---       <*> o .: "age"
 urls :: [String]
 urls =
-  [ "https://quintenkasteel.github.io/visual-regression-test"
+  [ "https://hanos-accept.floydhamilton.net/vacatures",
+    "https://welkoop-accept.floydhamilton.net/vacatures"
   ]
 
 file :: String
