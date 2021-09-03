@@ -9,11 +9,6 @@ on:
     branches: [master]
   pull_request:
     branches: [master]
-name: Continous Integration
-on:
-  push:
-    paths-ignore:
-      - '**.md'
 
 jobs:
   build:
