@@ -4,7 +4,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
 
-import Data.Aeson (withObject) -- should be provided by yaml...
 import Data.Text (Text)
 import Data.Vector (Vector)
 import Data.Yaml
@@ -38,12 +37,12 @@ file = "snapshots.yaml"
 
 main :: IO ()
 main = do
-  encodedUrls <- encodeUrls urls
+  encodedUrls <- encodeUrls
   encodeFile file encodedUrls
   resDecoder encodedUrls
 
-encodeUrls :: [String] -> IO (Vector Text)
-encodeUrls urls =
+encodeUrls :: IO (Vector Text)
+encodeUrls =
   case decodeEither' (encode urls) of
     Left exc -> error $ "Could not parse: " ++ show exc
     Right urls' -> return urls'

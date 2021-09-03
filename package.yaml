@@ -1,4 +1,4 @@
-name: app
+name: generate
 version: 0.1.0.0
 github: "githubuser/app"
 license: BSD3
@@ -8,7 +8,6 @@ copyright: "2021 Author name here"
 
 extra-source-files:
   - README.md
-  - ChangeLog.md
 
 # Metadata used when publishing your package
 # synopsis:            Short description of your package
@@ -21,13 +20,17 @@ description: Please see the README on GitHub at <https://github.com/githubuser/a
 
 dependencies:
   - base >= 4.7 && < 5
+  - aeson
+  - yaml
+  - vector
+  - text
 
 library:
   source-dirs: src
 
 executables:
-  app-exe:
-    main: Main.hs
+  generate:
+    main: generate.hs
     ghc-options:
       - -threaded
       - -rtsopts

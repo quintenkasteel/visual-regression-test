@@ -26,8 +26,6 @@ jobs:
         with:
           path: ~/.stack
           key: ${{ runner.os }}-store-${{ hashFiles('stack.yaml.lock') }}
-      - name: Stack build
-        run: make stack-install
       - name: Generate
         run: make generate
       - name: Install
