@@ -33,4 +33,4 @@ jobs:
           PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
         with:
           # Your test suites CLI command
-          custum-command: percy snapshot snapshots.yml
+          custom-command: percy snapshot snapshots.yml
