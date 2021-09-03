@@ -17,6 +17,8 @@ jobs:
       matrix:
         cabal: ["3.2"]
         ghc: ["8.6.5", "8.8.3", "8.10.1"]
+    env:
+      CONFIG: "--enable-tests --enable-benchmarks"
     steps:
       - name: Checkout
         uses: actions/checkout@master
