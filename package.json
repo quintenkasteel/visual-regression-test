@@ -1,0 +1,23 @@
+{
+  "name": "visual-regression-test",
+  "version": "1.0.0",
+  "description": "[Site](https://quintenkasteel.github.io/visual-regression-test/)",
+  "main": "index.html",
+  "dependencies": {
+    "@percy/cli": "^1.0.0-beta.67"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/quintenkasteel/visual-regression-test.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/quintenkasteel/visual-regression-test/issues"
+  },
+  "homepage": "https://github.com/quintenkasteel/visual-regression-test#readme"
+}
