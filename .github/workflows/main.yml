@@ -29,6 +29,8 @@ jobs:
         # You may pin to the exact commit or the version.
         # uses: percy/exec-action@20e02fc241611bb7842e20e94076217c1d7663fd
         uses: percy/exec-action@v0.3.1
+        env:
+          PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
         with:
           # Your test suites CLI command
           command: percy snapshot snapshots.yml
