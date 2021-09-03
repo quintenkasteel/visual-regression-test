@@ -39,7 +39,7 @@ file = "snapshots.yaml"
 main :: IO ()
 main = do
   encodedUrls <- encodeUrls urls
-  encodeFile file (encodedUrls :: Vector Text)
+  encodeFile file encodedUrls
   resDecoder encodedUrls
 
 encodeUrls :: [String] -> IO (Vector Text)
