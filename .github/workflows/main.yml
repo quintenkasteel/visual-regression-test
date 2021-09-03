@@ -19,6 +19,6 @@ jobs:
       - name: Install
         run: yarn
       - name: Percy Test
-        run: npx percy exec -- percy snapshot snaptshots.yml
+        run: npx percy exec -- percy snapshot snapshots.yml
         env:
           PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
