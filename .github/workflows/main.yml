@@ -20,6 +20,14 @@ jobs:
         uses: mstksg/setup-stack@v2
         env:
           ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+      - name: Cache dependencies (Unix)
+        uses: actions/cache@v1
+        if: matrix.os != 'windows-2019'
+        with:
+          path: ~/.stack
+          key: ${{ runner.os }}-store-${{ hashFiles('stack.yaml.lock') }}
+      - name: Stack build
+        run: make stack-install
       - name: Generate
         run: make generate
       - name: Install
