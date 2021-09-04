@@ -12,6 +12,7 @@ import Data.Vector (Vector)
 import Data.Yaml
 import GHC.IO.Handle
 import System.Environment
+import System.Exit
 import System.Process
 import Text.Regex.PCRE.Heavy
 
@@ -75,7 +76,9 @@ runCmdWithWarning str args = do
   result <- try' $ createProcess (proc str args)
   case result of
     Left ex -> putStrLn $ "::warning ::Error:" ++ show ex
-    Right _ -> return ()
+    Right (_, _, _, p) -> do
+      exitCode <- waitForProcess p
+      exitWith exitCode
 
 snapshotCmd :: Domain -> IO String
 snapshotCmd Domain {name, token} =
