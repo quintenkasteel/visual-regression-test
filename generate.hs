@@ -4,21 +4,23 @@
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE RecordWildCards #-}
 
+import Control.Exception
 import Data.List.Split
 import Data.String.Interpolate
 import Data.Text (Text)
 import Data.Vector (Vector)
 import Data.Yaml
 import GHC.IO.Handle
+import System.Environment
 import System.Process
 import Text.Regex.PCRE.Heavy
 
-last' :: [a] -> a
-last' ys = foldl1 (\_ -> \x -> x) ys
+main :: IO ()
+main = do
+  _ <- runCmds
+  return ()
 
-first' :: [a] -> a
-first' ys = last' (reverse ys)
-
+-- DOMAINS
 data Domain = Domain
   { name :: String,
     url :: String,
@@ -35,16 +37,48 @@ urls =
       }
   ]
 
-rgx :: Regex
-rgx = [re|(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})|]
+-- CMDS
+runCmds :: IO [()]
+runCmds = do
+  _ <- callCommand "yarn install"
+  traverse
+    ( \domain@(Domain {name, url}) -> do
+        encodedUrls <- encodeUrls [url]
+        encodeFile (file name) encodedUrls
+        resDecoder encodedUrls name
+        snapShotRes <- snapshotCmd domain
+        awaitBuildCmd domain snapShotRes
+    )
+    urls
 
-scanurlRgx :: String -> String
-scanurlRgx str =
-  let scanned = scan rgx (show str)
-   in first' $ splitOn "\\" $ fst $ first' scanned
+awaitBuildCmd :: Domain -> String -> IO ()
+awaitBuildCmd Domain {token} snapShotRes = do
+  setEnv "PERCY_TOKEN" token
+  runCmdWithWarning
+    "yarn"
+    [ "percy",
+      "build:wait",
+      [i|--build=#{buildNumber snapShotRes}|],
+      "--fail-on-changes"
+    ]
 
-snapshot :: Domain -> IO String
-snapshot Domain {name, token} =
+--  callCommand
+--     [i|#{percy_token token} yarn percy build:wait --build=#{buildNumber} --fail-on-changes|]
+buildNumber :: String -> String
+buildNumber snapShotRes = last' $ splitOn "/" $ scanurlRgx snapShotRes
+
+try' :: IO a -> IO (Either IOException a)
+try' = try
+
+runCmdWithWarning :: String -> [String] -> IO ()
+runCmdWithWarning str args = do
+  result <- try' $ createProcess (proc str args)
+  case result of
+    Left ex -> putStrLn $ "::warning ::Error:" ++ show ex
+    Right _ -> return ()
+
+snapshotCmd :: Domain -> IO String
+snapshotCmd Domain {name, token} =
   eval [i|#{percy_token token} yarn percy snapshot #{file name}|]
 
 file :: String -> String
@@ -52,29 +86,6 @@ file name = [i|snapshots-#{name}.yaml|]
 
 percy_token :: String -> String
 percy_token value = [i|PERCY_TOKEN=#{value}|]
-
-awaitBuildCmd :: Domain -> String -> IO ()
-awaitBuildCmd Domain {token} snapShotRes =
-  let buildNumber = last' $ splitOn "/" $ scanurlRgx snapShotRes
-   in callCommand [i|#{percy_token token} yarn percy build:wait --build=#{buildNumber}|]
-
-main :: IO ()
-main = do
-  _ <- callCommand "yarn install"
-  _ <- runCmds
-  return ()
-
-runCmds :: IO [()]
-runCmds =
-  traverse
-    ( \domain@(Domain {name, url}) -> do
-        encodedUrls <- encodeUrls [url]
-        encodeFile (file name) encodedUrls
-        resDecoder encodedUrls name
-        snapShotRes <- snapshot domain
-        awaitBuildCmd domain snapShotRes
-    )
-    urls
 
 encodeUrls :: [String] -> IO (Vector Text)
 encodeUrls urls' =
@@ -97,3 +108,19 @@ eval s = do
   sOutput <- hGetContents hOutput
   _ <- foldr seq (waitForProcess hProcess) sOutput
   return sOutput
+
+-- UTILS
+last' :: [a] -> a
+last' ys = foldl1 (\_ -> \x -> x) ys
+
+first' :: [a] -> a
+first' ys = last' (reverse ys)
+
+-- RGX
+rgx :: Regex
+rgx = [re|(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})|]
+
+scanurlRgx :: String -> String
+scanurlRgx str =
+  let scanned = scan rgx (show str)
+   in first' $ splitOn "\\" $ fst $ first' scanned

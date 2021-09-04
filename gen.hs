@@ -5,39 +5,35 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
+import Control.Exception
 import Data.List
 import Data.List.Split
 import GHC.IO.Handle
+import System.Environment
 import System.Process
 import Text.Regex.PCRE.Heavy
 
+-- [i|#{percy_token token} yarn percy build:wait --build=#{buildNumber} --fail-on-changes|]
+
 main :: IO ()
-main =
-  let url = (scanurlRgx txt)
-   in print url
+main = do
+  setEnv "PERCY_TOKEN" "7e4576385b692083f8054052bc5cb0c80ea5c8fdb486354d2fb74bd6cc53711b"
+  runCmdWithWarning
+    "yarn"
+    [ "percy",
+      "snapshot",
+      "snapshots-test.yaml"
+      -- "build:wait",
+      -- "--build=abc",
+      -- "--fail-on-changes"
+    ]
 
--- eval :: String -> IO String
--- eval s = do
---   (_, hOutput, _, hProcess) <- runInteractiveCommand s
---   sOutput <- hGetContents hOutput
---   foldr seq (waitForProcess hProcess) sOutput
---   return sOutput
-txt2 :: String
-txt2 = "https://percy.io/9b758d91/visual-regression-test/builds/12518458"
+try' :: IO a -> IO (Either IOException a)
+try' = try
 
-txt :: String
-txt = show "yarn run v1.22.11\n$ /Users/quintenkasteel/projects/visual-regression-test/node_modules/.bin/percy snapshot snapshots-test.yaml\n[\ESC[35mpercy\ESC[39m] Percy has started!\n[\ESC[35mpercy\ESC[39m] Processing 1 snapshot...\n[\ESC[35mpercy\ESC[39m] Snapshot taken: /visual-regression-test\n[\ESC[35mpercy\ESC[39m] Finalized build #28: \ESC[34mhttps://percy.io/9b758d91/visual-regression-test/builds/12518458\ESC[39m\nDone in 4.54s.\n"
-
-scanurlRgx :: String -> String
-scanurlRgx str =
-  let scanned = scan [re|(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})|] str
-   in scannedToUrl scanned
-
-scannedToUrl :: [(String, [String])] -> String
-scannedToUrl = \case
-  [(x, _)] ->
-    case splitOn "\\" x of
-      url : _ -> url
-      [url] -> url
-      _ -> ""
-  _ -> ""
+runCmdWithWarning :: String -> [String] -> IO ()
+runCmdWithWarning str args = do
+  result <- try' $ createProcess (proc str args)
+  case result of
+    Left ex -> putStrLn $ "::warning ::Error:" ++ show ex
+    Right (_, _, _, p) -> return ()
