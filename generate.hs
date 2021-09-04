@@ -1,6 +1,5 @@
-#!/usr/bin/env stack
--- stack --resolver lts-12.21 script
-
+-- #!/usr/bin/env stack
+-- -- stack --resolver lts-12.21 script
 {-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes #-}
@@ -24,7 +23,7 @@ urls =
   [ Domain
       { name = "test",
         url = "https://quintenkasteel.github.io/visual-regression-test",
-        token = "33ae625f5325f75d6e7166bc913224399f4a411ee23f9e5d7f118b4f7840e20e"
+        token = "c89478b118f5d33c77330d712a444e2ef02a43b2b1f38dd725a0671c196beca8"
       }
   ]
 
@@ -43,11 +42,11 @@ main = do
   _ <- callCommand "yarn install"
   _ <-
     traverse
-      ( \domain'@(Domain {name, url}) -> do
+      ( \domain@(Domain {name, url}) -> do
           encodedUrls <- encodeUrls [url]
           encodeFile (file name) encodedUrls
           resDecoder encodedUrls name
-          command domain'
+          command domain
       )
       urls
   return ()
