@@ -40,6 +40,7 @@ percy_token value = [i|PERCY_TOKEN=#{value}|]
 
 main :: IO ()
 main = do
+  _ <- callCommand "yarn install"
   _ <-
     traverse
       ( \domain'@(Domain {name, url}) -> do

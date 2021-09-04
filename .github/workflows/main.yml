@@ -28,9 +28,3 @@ jobs:
           key: ${{ runner.os }}-store-${{ hashFiles('stack.yaml.lock') }}-${{ hashFiles('generate.cabal') }}
       - name: Generate
         run: make generate
-      - name: Install
-        run: yarn
-      - name: Percy
-        run: yarn percy snapshot snapshots.yaml
-        env:
-          PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
