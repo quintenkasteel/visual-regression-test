@@ -26,6 +26,8 @@ dependencies:
   - text
   - interpolate
   - process
+  - pcre-heavy
+  - split
 
 library:
   source-dirs: src
