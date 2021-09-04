@@ -26,5 +26,11 @@ jobs:
         with:
           path: ~/.stack
           key: ${{ runner.os }}-store-${{ hashFiles('stack.yaml.lock') }}-${{ hashFiles('generate.cabal') }}
-      - name: Generate
+      - name: Setup Elm
+        uses: jorelali/setup-elm@v3
+        with:
+          elm-version: 0.19.1
+      - name: Compile Elm
+        run: elm make src/Main.elm
+      - name: Generate Visuals
         run: make generate
