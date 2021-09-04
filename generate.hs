@@ -75,10 +75,15 @@ runCmdWithWarning :: String -> [String] -> IO ()
 runCmdWithWarning str args = do
   result <- try' $ createProcess (proc str args)
   case result of
-    Left ex -> putStrLn $ "::warning ::Error:" ++ show ex
+    Left ex -> putWarning (show ex)
     Right (_, _, _, p) -> do
       exitCode <- waitForProcess p
-      exitWith exitCode
+      case exitCode of
+        ExitFailure _ -> putWarning "shit"
+        ExitSuccess -> return ()
+
+putWarning :: String -> IO ()
+putWarning str = putStrLn $ "::warning ::Error:" ++ str
 
 snapshotCmd :: Domain -> IO String
 snapshotCmd Domain {name, token} =

@@ -25,8 +25,9 @@ update msg model =
 
 
 view model =
-    div [ style "background" "pink" ]
+    div [ style "background" "red" ]
         [ button [ onClick Decrement ] [ text "-" ]
         , div [] [ text <| "text: " ++ String.fromInt model ]
         , button [ onClick Increment ] [ text "+" ]
+        , div [] [ text "hello" ]
         ]
