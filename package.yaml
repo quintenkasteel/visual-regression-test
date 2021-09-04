@@ -24,6 +24,8 @@ dependencies:
   - yaml
   - vector
   - text
+  - interpolate
+  - process
 
 library:
   source-dirs: src
