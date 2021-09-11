@@ -79,7 +79,7 @@ runCmdWithWarning str args = do
     Right (_, _, _, p) -> do
       exitCode <- waitForProcess p
       case exitCode of
-        ExitFailure _ -> putWarning "shit"
+        ExitFailure _ -> putWarning "oops"
         ExitSuccess -> return ()
 
 putWarning :: String -> IO ()
